@@ -55,12 +55,12 @@ RUN bash /opt/rtpi-pen/install_kasm.sh
 
 #---------------------------------
 # Install Google Rapid Response
-WORKDIR "/opt"
-RUN apk add bash tar curl
+#WORKDIR "/opt"
+#RUN apk add bash tar curl
 
 ## Automated Install
-RUN curl https://github.com/cmndcntrlcyber/rtpi-nexus/grr/install_grr.sh > /opt/rtpi-nexus/install_grr.sh
-RUN bash /opt/rtpi-nexus/install_grr.sh
+#RUN curl https://github.com/cmndcntrlcyber/rtpi-nexus/grr/install_grr.sh > /opt/rtpi-nexus/install_grr.sh
+#RUN bash /opt/rtpi-nexus/install_grr.sh
 #---------------------------------
 
 
