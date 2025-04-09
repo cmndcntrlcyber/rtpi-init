@@ -21,8 +21,8 @@ This repository contains a comprehensive Docker setup for multiple security tool
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/yourusername/docker-security-environment.git
-cd docker-security-environment
+git clone https://github.com/cmndcntrlcyber/rtpi-init.git
+cd rtpi-init
 ```
 
 2. Make the setup script executable:
