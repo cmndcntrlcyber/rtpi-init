@@ -135,6 +135,7 @@ services:
       - portainer_network
       - hack_network
 
+
   # Evilginx2 in Kasm Workspace
   evilginx2-workspace:
     image: kasmweb/ubuntu-focal-desktop:1.14.0

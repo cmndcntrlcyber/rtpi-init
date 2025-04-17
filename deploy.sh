@@ -85,9 +85,6 @@ configure_environment() {
     DEFAULT_GOPHISH_PHISH_PORT=8080
     DEFAULT_KASM_PORT=443
     DEFAULT_PORTAINER_PORT=9000
-    DEFAULT_NPM_HTTP_PORT=80
-    DEFAULT_NPM_ADMIN_PORT=81
-    DEFAULT_NPM_HTTPS_PORT=443
     
     # Load existing .env file if it exists
     if [ -f ".env" ]; then
@@ -115,10 +112,6 @@ EVILGINX2_HTTPS_PORT=${EVILGINX2_HTTPS_PORT:-$DEFAULT_EVILGINX2_HTTPS_PORT}
 GOPHISH_ADMIN_PORT=${GOPHISH_ADMIN_PORT:-$DEFAULT_GOPHISH_ADMIN_PORT}
 GOPHISH_PHISH_PORT=${GOPHISH_PHISH_PORT:-$DEFAULT_GOPHISH_PHISH_PORT}
 
-# Nginx Proxy Manager Configuration
-NPM_HTTP_PORT=${NPM_HTTP_PORT:-$DEFAULT_NPM_HTTP_PORT}
-NPM_ADMIN_PORT=${NPM_ADMIN_PORT:-$DEFAULT_NPM_ADMIN_PORT}
-NPM_HTTPS_PORT=${NPM_HTTPS_PORT:-$DEFAULT_NPM_HTTPS_PORT}
 
 # Database Configuration
 DB_HOST=${DB_HOST:-kasm_db}
@@ -178,9 +171,6 @@ check_for_conflicts() {
         "$EVILGINX2_HTTPS_PORT:Evilginx2:HTTPS"
         "$GOPHISH_ADMIN_PORT:Gophish:Admin"
         "$GOPHISH_PHISH_PORT:Gophish:Phishing"
-        "$NPM_HTTP_PORT:Nginx Proxy Manager:HTTP"
-        "$NPM_ADMIN_PORT:Nginx Proxy Manager:Admin"
-        "$NPM_HTTPS_PORT:Nginx Proxy Manager:HTTPS"
     )
     
     # Check each port
@@ -273,24 +263,6 @@ configure_ports() {
         sed -i "s/GOPHISH_PHISH_PORT=.*/GOPHISH_PHISH_PORT=$gophish_phish_port/" .env
     fi
     
-    # Configure Nginx Proxy Manager ports
-    print_message "Enter the HTTP port for Nginx Proxy Manager (default: ${NPM_HTTP_PORT}):"
-    read -r npm_http_port
-    if [[ -n "$npm_http_port" ]]; then
-        sed -i "s/NPM_HTTP_PORT=.*/NPM_HTTP_PORT=$npm_http_port/" .env
-    fi
-    
-    print_message "Enter the admin port for Nginx Proxy Manager (default: ${NPM_ADMIN_PORT}):"
-    read -r npm_admin_port
-    if [[ -n "$npm_admin_port" ]]; then
-        sed -i "s/NPM_ADMIN_PORT=.*/NPM_ADMIN_PORT=$npm_admin_port/" .env
-    fi
-    
-    print_message "Enter the HTTPS port for Nginx Proxy Manager (default: ${NPM_HTTPS_PORT}):"
-    read -r npm_https_port
-    if [[ -n "$npm_https_port" ]]; then
-        sed -i "s/NPM_HTTPS_PORT=.*/NPM_HTTPS_PORT=$npm_https_port/" .env
-    fi
     
     print_message "Ports configured successfully."
 }
@@ -302,7 +274,6 @@ deploy_all_services() {
     deploy_service "gophish"
     deploy_service "kasm"
     deploy_service "portainer"
-    deploy_service "nginx-proxy-manager"
     deploy_service "axiom"
 }
 
@@ -319,9 +290,6 @@ auto_check_for_conflicts() {
         "$EVILGINX2_HTTPS_PORT:Evilginx2:HTTPS"
         "$GOPHISH_ADMIN_PORT:Gophish:Admin"
         "$GOPHISH_PHISH_PORT:Gophish:Phishing"
-        "$NPM_HTTP_PORT:Nginx Proxy Manager:HTTP"
-        "$NPM_ADMIN_PORT:Nginx Proxy Manager:Admin"
-        "$NPM_HTTPS_PORT:Nginx Proxy Manager:HTTPS"
     )
     
     # Check each port
@@ -410,11 +378,10 @@ main() {
         print_message "3) Gophish"
         print_message "4) Kasm Workspaces"
         print_message "5) Portainer"
-        print_message "6) Nginx Proxy Manager"
-        print_message "7) Axiom"
+        print_message "6) Axiom"
         print_message "0) Exit"
         
-        read -r -p "Enter your choice (1-7): " choice
+        read -r -p "Enter your choice (1-6): " choice
         
         case $choice in
             1)
@@ -433,9 +400,6 @@ main() {
                 deploy_service "portainer"
                 ;;
             6)
-                deploy_service "nginx-proxy-manager"
-                ;;
-            7)
                 deploy_service "axiom"
                 ;;
             0)

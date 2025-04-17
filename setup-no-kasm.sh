@@ -51,11 +51,6 @@ EVILGINX2_HTTPS_PORT=8443
 # Gophish Configuration
 GOPHISH_ADMIN_PORT=3333
 GOPHISH_PHISH_PORT=8080
-
-# Nginx Proxy Manager Configuration
-NPM_HTTP_PORT=80
-NPM_HTTPS_PORT=443
-NPM_ADMIN_PORT=81
 EOL
 
 # Ask for configuration
@@ -97,24 +92,6 @@ if [[ "$answer" =~ ^[Yy]$ ]]; then
         sed -i "s/GOPHISH_PHISH_PORT=.*/GOPHISH_PHISH_PORT=$gophish_phish_port/" .env.no-kasm
     fi
     
-    # Ask for NPM ports
-    print_message "Enter the HTTP port for Nginx Proxy Manager (default: 80):"
-    read -r npm_http_port
-    if [[ -n "$npm_http_port" ]]; then
-        sed -i "s/NPM_HTTP_PORT=.*/NPM_HTTP_PORT=$npm_http_port/" .env.no-kasm
-    fi
-    
-    print_message "Enter the HTTPS port for Nginx Proxy Manager (default: 443):"
-    read -r npm_https_port
-    if [[ -n "$npm_https_port" ]]; then
-        sed -i "s/NPM_HTTPS_PORT=.*/NPM_HTTPS_PORT=$npm_https_port/" .env.no-kasm
-    fi
-    
-    print_message "Enter the Admin port for Nginx Proxy Manager (default: 81):"
-    read -r npm_admin_port
-    if [[ -n "$npm_admin_port" ]]; then
-        sed -i "s/NPM_ADMIN_PORT=.*/NPM_ADMIN_PORT=$npm_admin_port/" .env.no-kasm
-    fi
 fi
 
 # Create docker-compose-no-kasm.yml
@@ -139,20 +116,6 @@ services:
     networks:
       - redteam_network
 
-  # Nginx Proxy Manager
-  nginx-proxy-manager:
-    image: jc21/nginx-proxy-manager:latest
-    container_name: nginx-proxy-manager
-    restart: unless-stopped
-    ports:
-      - "${NPM_HTTP_PORT:-80}:80"
-      - "${NPM_ADMIN_PORT:-81}:81"      # Admin UI
-      - "${NPM_HTTPS_PORT:-443}:443"    # HTTPS
-    volumes:
-      - npm_data:/data
-      - npm_letsencrypt:/etc/letsencrypt
-    networks:
-      - redteam_network
 
   # Standalone Evilginx2 service
   evilginx2:
@@ -209,8 +172,6 @@ networks:
 
 volumes:
   portainer_data:
-  npm_data:
-  npm_letsencrypt:
   evilginx2_data:
   gophish_data:
   axiom_data:
@@ -228,7 +189,6 @@ sleep 10
 print_message "Setup complete! Access your services at:"
 source .env.no-kasm
 echo -e "Portainer: http://localhost:${PORTAINER_PORT} (create your admin account on first login)"
-echo -e "Nginx Proxy Manager: http://localhost:${NPM_ADMIN_PORT} (default credentials: admin@example.com / changeme)"
 echo -e "Evilginx2 Service: Access ports ${EVILGINX2_HTTP_PORT}(HTTP), ${EVILGINX2_HTTPS_PORT}(HTTPS), and 5353(DNS)"
 echo -e "Gophish Admin: https://localhost:${GOPHISH_ADMIN_PORT} (default credentials: admin / gophish)"
 echo -e "Gophish Phishing: http://localhost:${GOPHISH_PHISH_PORT}"
