@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer_data:/data
+    ports:
+      - "${PORTAINER_PORT:-9000}:9000"
+    networks:
+      - portainer_network
+
+networks:
+  portainer_network:
+    driver: bridge
+
+volumes:
+  portainer_data:
