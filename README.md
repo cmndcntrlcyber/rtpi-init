@@ -188,7 +188,33 @@ This script will:
 - **Container failures**: Check logs with `./utils.sh logs [container_name]`
 - **Workspace issues**: You can manually execute setup scripts inside containers
 - **Performance issues**: Increase Docker resources (CPU/RAM) if workspaces are slow
-- **Network issues**: Run `./test-deployment.sh` to verify connectivity between services
+- **Build failures**: Ensure you're using compatible Go versions (Go 1.22+) for Evilginx2 and Gophish builds
+
+## Recent Updates
+
+### April 2025 Update
+
+1. **Kasm Workspaces Architecture**: Upgraded to microservices architecture (v1.15.0)
+   - Improved stability and scalability with dedicated containers for each service
+   - Fixed IP addressing within a dedicated bridge network
+   - Services include: kasm_agent, kasm_api, kasm_db, kasm_guac, kasm_manager, kasm_proxy, kasm_redis, kasm_share
+
+2. **Go Version Upgrade**: Updated all Dockerfiles to use Go 1.22
+   - Fixed compatibility issues with upstream Gophish and Evilginx2 repositories
+   - Updated the following files:
+     - Dockerfile.gophish (Go 1.19 → Go 1.22)
+     - Dockerfile.evilginx2 (Go 1.19 → Go 1.22)
+     - evilginx2/Dockerfile (Go 1.20 → Go 1.22)
+     - gophish/Dockerfile (Go 1.20 → Go 1.22)
+
+3. **Rebuilding after updates**:
+   ```bash
+   # Remove any cached layers
+   docker compose build --no-cache
+
+   # Then bring everything up
+   docker compose up -d
+   ```
 
 ## Contributing
 
