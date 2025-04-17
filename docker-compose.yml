@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Kasm Workspaces
+  # Kasm Workspaces main server
   kasm_db:
     container_name: kasm_db
     image: postgres:12
@@ -33,12 +33,13 @@ services:
       - /dev/shm:/dev/shm
       - kasm_profiles:/profiles
       - kasm_data:/opt/kasm/current/data
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - kasm_db
     networks:
       - kasm_network
 
-  # Portainer
+  # Portainer for container management
   portainer:
     container_name: portainer
     image: portainer/portainer-ce:latest
@@ -54,7 +55,56 @@ services:
     networks:
       - portainer_network
 
-  # Evilginx2
+  # Nginx Proxy Manager
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "81:81"      # Admin UI
+      - "8443:443"   # HTTPS (changed port to avoid conflict with Kasm)
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - kasm_network
+
+  # Evilginx2 in Kasm Workspace
+  evilginx2-workspace:
+    image: kasmweb/ubuntu-focal-desktop:1.14.0
+    container_name: evilginx2-workspace
+    restart: unless-stopped
+    ports:
+      - "6901:6901"  # Kasm Web interface for evilginx2
+    environment:
+      - VNC_PW=${WORKSPACE_PASSWORD:-password123}
+      - KASM_USER=evilginx_user
+    volumes:
+      - evilginx2_workspace_data:/home/kasm-user/data
+      - ./setup-evilginx2.sh:/dockerstartup/setup-evilginx2.sh
+    networks:
+      - kasm_network
+      - hack_network
+
+  # Gophish in Kasm Workspace
+  gophish-workspace:
+    image: kasmweb/ubuntu-focal-desktop:1.14.0
+    container_name: gophish-workspace
+    restart: unless-stopped
+    ports:
+      - "6902:6901"  # Kasm Web interface for gophish
+    environment:
+      - VNC_PW=${WORKSPACE_PASSWORD:-password123}
+      - KASM_USER=gophish_user
+    volumes:
+      - gophish_workspace_data:/home/kasm-user/data
+      - ./setup-gophish.sh:/dockerstartup/setup-gophish.sh
+    networks:
+      - kasm_network
+      - hack_network
+
+  # Standalone Evilginx2 service
   evilginx2:
     container_name: evilginx2
     build:
@@ -64,14 +114,15 @@ services:
     cap_add:
       - NET_ADMIN
     ports:
-      - "80:80"
-      - "443:443"
+      - "${EVILGINX2_HTTP_PORT:-8880}:80"
+      - "${EVILGINX2_HTTPS_PORT:-8443}:443"
+      - "5353:53/udp"
     volumes:
       - evilginx2_data:/root/.evilginx
     networks:
       - hack_network
 
-  # Gophish
+  # Standalone Gophish service
   gophish:
     container_name: gophish
     build:
@@ -115,6 +166,10 @@ volumes:
   kasm_profiles:
   kasm_data:
   portainer_data:
+  npm_data:
+  npm_letsencrypt:
+  evilginx2_workspace_data:
+  gophish_workspace_data:
   evilginx2_data:
   gophish_data:
   axiom_data:

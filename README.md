@@ -1,71 +1,108 @@
 # RTPI-INIT (Red Team Portable Infrastructure - INIT)
-A pentesting flavor of the Red Team Portable Infrastructure
 
-## Docker Environment Setup
+A comprehensive containerized infrastructure for red team operations, penetration testing, and phishing campaigns.
 
-This repository contains a comprehensive Docker setup for multiple security tools and environments:
+## Overview
 
-- **Kasm Workspaces**: Browser-based containerized desktops
-- **Portainer**: Docker management UI
-- **Evilginx2**: Phishing framework
-- **Gophish**: Phishing campaign framework
-- **Axiom**: Dynamic infrastructure framework
+This project integrates multiple security tools into a coherent, containerized environment:
+
+- **Kasm Workspaces**: Browser-accessible virtual desktops for security tools
+- **Portainer**: Docker container management UI
+- **Nginx Proxy Manager**: Web traffic routing with SSL support
+- **Evilginx2**: Advanced phishing framework (available as both standalone service and in Kasm workspace)
+- **Gophish**: Phishing campaign management (available as both standalone service and in Kasm workspace)
+- **Axiom**: Dynamic infrastructure framework for red team operations
+
+## Architecture
+
+The infrastructure consists of:
+
+1. **Kasm Core**: Main server providing virtual desktop access and workspace management
+2. **Dedicated Workspaces**:
+   - Evilginx2 workspace with persistent storage and profiles
+   - Gophish workspace with persistent storage and profiles
+3. **Standalone Services**:
+   - Evilginx2 service with direct port access
+   - Gophish service with direct port access
+   - Portainer for container management
+   - Nginx Proxy Manager for routing and SSL termination
+   - Axiom for dynamic infrastructure
 
 ## Prerequisites
 
 - Docker
 - Docker Compose
-- Linux/macOS environment (Windows with WSL2 should also work)
+- 8GB+ RAM recommended
+- Open ports: 80, 81, 443, 3333, 5353, 6901, 6902, 8080, 8443, 8880, 9000
 
-## Installation
+## Setup Instructions
 
 1. Clone this repository:
-```bash
-git clone https://github.com/cmndcntrlcyber/rtpi-init.git
-cd rtpi-init
-```
+   ```bash
+   git clone https://github.com/yourusername/rtpi-init.git
+   cd rtpi-init
+   ```
 
-2. Make the setup script executable:
-```bash
-chmod +x setup.sh
-```
+2. Run the setup script:
+   ```bash
+   chmod +x setup.sh
+   ./setup.sh
+   ```
 
-3. Run the setup script:
-```bash
-./setup.sh
-```
+   This script will:
+   - Create necessary configuration files
+   - Set up environment variables (or let you customize them)
+   - Start all containers
+   - Display access information
 
-The script will:
-- Create necessary directories
-- Set up default environment variables (or let you customize them)
-- Start all containers
-- Display access information
-
-## Accessing the Tools
+## Access Information
 
 After installation, you can access the tools at:
 
-- **Kasm Workspaces**: https://localhost:443 (or the port you configured)
+- **Kasm Workspaces**: https://localhost:443 (or your configured port)
   - Default credentials: admin@kasm.local / password
-- **Portainer**: http://localhost:9000 (or the port you configured)
+- **Portainer**: http://localhost:9000 (or your configured port)
   - Create your admin account on first login
-- **Gophish**:
-  - Admin interface: https://localhost:3333 (or the port you configured)
+- **Nginx Proxy Manager**: http://localhost:81
+  - Default credentials: admin@example.com / changeme
+- **Evilginx2 Workspace**: https://localhost:6901
+  - Password: password123 (or your configured password)
+- **Gophish Workspace**: https://localhost:6902
+  - Password: password123 (or your configured password)
+- **Evilginx2 Service**:
+  - HTTP: Port 8880 (or your configured port)
+  - HTTPS: Port 8443 (or your configured port)
+  - DNS: Port 5353
+- **Gophish Service**:
+  - Admin interface: https://localhost:3333 (or your configured port)
     - Default credentials: admin / gophish
-  - Phishing interface: http://localhost:8080 (or the port you configured)
-- **Evilginx2**: Access through Docker shell:
-  ```bash
-  docker exec -it evilginx2 bash
-  evilginx
-  ```
+  - Phishing interface: http://localhost:8080 (or your configured port)
 - **Axiom**: Access through Docker shell:
   ```bash
   docker exec -it axiom bash
   ```
 
+## Workspace Features
+
+### Evilginx2 Workspace
+
+The Evilginx2 workspace provides:
+- Full desktop environment accessible via browser
+- Persistent storage for phishlets and configurations
+- Pre-installed dependencies for Evilginx2
+- Desktop shortcut for easy access
+
+### Gophish Workspace
+
+The Gophish workspace provides:
+- Full desktop environment accessible via browser
+- Persistent storage for campaigns and templates
+- Pre-installed dependencies for Gophish
+- Desktop shortcut for easy access
+
 ## Utility Script
 
-A utility script (`utils.sh`) is included to help manage the environment:
+The utility script (`utils.sh`) helps manage the environment:
 
 ```bash
 chmod +x utils.sh  # Make it executable
@@ -77,61 +114,48 @@ Available commands:
 - `start`: Start all containers
 - `stop`: Stop all containers
 - `restart`: Restart all containers
-- `logs [name]`: Show logs for a specific container (or all if no name provided)
+- `logs [name]`: Show logs for a specific container
 - `shell [name]`: Open a shell in a specific container
 - `update`: Update all containers
 - `backup`: Create a backup of all volumes
 - `restore`: Restore backup of all volumes
 
-## Directory Structure
+## Volumes and Persistence
 
-```
-.
-├── docker-compose.yml      # Main docker-compose configuration
-├── .env                    # Environment variables
-├── evilginx2/              # Evilginx2 files
-│   └── Dockerfile          # Evilginx2 Dockerfile
-├── gophish/                # Gophish files
-│   └── Dockerfile          # Gophish Dockerfile
-├── setup.sh                # Setup script
-├── utils.sh                # Utility script
-└── README.md               # This README
-```
+All services use Docker volumes for persistent storage:
+
+- `kasm_db_data`: Database for Kasm Workspaces
+- `kasm_profiles`: Kasm user profiles
+- `kasm_data`: Kasm application data
+- `portainer_data`: Portainer configuration and state
+- `npm_data`: Nginx Proxy Manager settings
+- `npm_letsencrypt`: SSL certificates
+- `evilginx2_workspace_data`: Data for Evilginx2 Kasm workspace
+- `gophish_workspace_data`: Data for Gophish Kasm workspace
+- `evilginx2_data`: Evilginx2 standalone service data
+- `gophish_data`: Gophish standalone service data
+- `axiom_data`: Axiom configuration and data
 
 ## Security Considerations
 
-- This setup contains penetration testing tools. Ensure you use them ethically and legally.
-- Change all default passwords immediately after setup.
-- Consider using a firewall to restrict access to sensitive services.
-- For production use, consider implementing TLS for all services and proper authentication.
+- Change all default passwords immediately after setup
+- Use Nginx Proxy Manager to secure internal services with SSL
+- Consider using firewall rules to restrict access to management interfaces
+- Run behind a VPN for sensitive red team operations
+- Ensure you have proper authorization before conducting any phishing campaigns
 
 ## Troubleshooting
 
-- **Port conflicts**: If you encounter port conflicts, modify the .env file and restart the containers.
-- **Container failures**: Check the logs with `./utils.sh logs [container_name]`.
-- **Permission issues**: Make sure Docker has appropriate permissions.
+- **Port conflicts**: Edit the .env file to change port mappings
+- **Container failures**: Check logs with `./utils.sh logs [container_name]`
+- **Workspace issues**: You can manually execute setup scripts inside containers
+- **Performance issues**: Increase Docker resources (CPU/RAM) if workspaces are slow
 
-## Backup and Restore
+## Contributing
 
-To backup all data:
-```bash
-./utils.sh backup
-```
-
-To restore a backup:
-```bash
-./utils.sh restore
-```
-
-This will create/restore backups of all Docker volumes used by the services.
-
-## Updating
-
-To update all containers to their latest versions:
-```bash
-./utils.sh update
-```
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-Use responsibly and legally. No warranty provided.
+This project is licensed for educational and authorized security testing purposes only.
+Use responsibly and ethically. No warranty provided.

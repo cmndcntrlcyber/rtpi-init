@@ -1,0 +1,23 @@
+{
+  "evilginx": {
+    "enabled": true,
+    "url": "http://evilginx2:80",
+    "use_for_urls": true,
+    "phishlet_config_dir": "/app/phishlets",
+    "default_phishlet": "linkedin"
+  },
+  "gophish": {
+    "admin_server": {
+      "listen_url": "0.0.0.0:3333",
+      "use_tls": false,
+      "cert_path": "gophish_admin.crt",
+      "key_path": "gophish_admin.key"
+    },
+    "phish_server": {
+      "listen_url": "0.0.0.0:8080",
+      "use_tls": false,
+      "cert_path": "example.crt",
+      "key_path": "example.key"
+    }
+  }
+}

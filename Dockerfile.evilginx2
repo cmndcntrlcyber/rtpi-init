@@ -1,0 +1,28 @@
+FROM golang:1.19-alpine AS builder
+
+RUN apk add --update git make
+
+WORKDIR /app
+
+# Clone the evilginx2 repository
+RUN git clone https://github.com/kgretzky/evilginx2.git .
+
+RUN go mod download
+RUN go build -o evilginx2 .
+
+FROM alpine:latest
+
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /app
+
+COPY --from=builder /app/evilginx2 /app/
+COPY --from=builder /app/phishlets /app/phishlets
+
+# Create necessary directories
+RUN mkdir -p /app/database
+RUN mkdir -p /app/redirectors
+
+EXPOSE 53/udp 80/tcp 443/tcp
+
+ENTRYPOINT ["/app/evilginx2", "-p", "/app/phishlets"]

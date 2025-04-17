@@ -34,9 +34,9 @@ if ! command -v docker-compose &> /dev/null; then
     exit 1
 fi
 
-# Create necessary directories
-print_message "Creating necessary directories..."
-mkdir -p evilginx2 gophish
+# Make setup scripts executable
+print_message "Making setup scripts executable..."
+chmod +x setup-evilginx2.sh setup-gophish.sh
 
 # Create .env file with default values
 print_message "Creating .env file with default values..."
@@ -48,6 +48,13 @@ KASM_PORT=443
 
 # Portainer Configuration
 PORTAINER_PORT=9000
+
+# Workspace Configuration
+WORKSPACE_PASSWORD=password123
+
+# Evilginx2 Configuration
+EVILGINX2_HTTP_PORT=8880
+EVILGINX2_HTTPS_PORT=8443
 
 # Gophish Configuration
 GOPHISH_ADMIN_PORT=3333
@@ -79,6 +86,27 @@ if [[ "$answer" =~ ^[Yy]$ ]]; then
         sed -i "s/PORTAINER_PORT=.*/PORTAINER_PORT=$portainer_port/" .env
     fi
     
+    # Ask for WORKSPACE_PASSWORD
+    print_message "Enter the password for Kasm workspaces (default: password123):"
+    read -r workspace_password
+    if [[ -n "$workspace_password" ]]; then
+        sed -i "s/WORKSPACE_PASSWORD=.*/WORKSPACE_PASSWORD=$workspace_password/" .env
+    fi
+    
+    # Ask for EVILGINX2_HTTP_PORT
+    print_message "Enter the HTTP port for Evilginx2 (default: 8880):"
+    read -r evilginx2_http_port
+    if [[ -n "$evilginx2_http_port" ]]; then
+        sed -i "s/EVILGINX2_HTTP_PORT=.*/EVILGINX2_HTTP_PORT=$evilginx2_http_port/" .env
+    fi
+    
+    # Ask for EVILGINX2_HTTPS_PORT
+    print_message "Enter the HTTPS port for Evilginx2 (default: 8443):"
+    read -r evilginx2_https_port
+    if [[ -n "$evilginx2_https_port" ]]; then
+        sed -i "s/EVILGINX2_HTTPS_PORT=.*/EVILGINX2_HTTPS_PORT=$evilginx2_https_port/" .env
+    fi
+    
     # Ask for GOPHISH_ADMIN_PORT
     print_message "Enter the admin port for Gophish (default: 3333):"
     read -r gophish_admin_port
@@ -107,9 +135,13 @@ print_message "Setup complete! Access your services at:"
 source .env
 echo -e "Kasm Workspaces: https://localhost:${KASM_PORT} (default credentials: admin@kasm.local / password)"
 echo -e "Portainer: http://localhost:${PORTAINER_PORT} (create your admin account on first login)"
+echo -e "Nginx Proxy Manager: http://localhost:81 (default credentials: admin@example.com / changeme)"
+echo -e "Evilginx2 Workspace: https://localhost:6901 (password: ${WORKSPACE_PASSWORD})"
+echo -e "Gophish Workspace: https://localhost:6902 (password: ${WORKSPACE_PASSWORD})"
+echo -e "Evilginx2 Service: Access ports ${EVILGINX2_HTTP_PORT}(HTTP), ${EVILGINX2_HTTPS_PORT}(HTTPS), and 5353(DNS)"
 echo -e "Gophish Admin: https://localhost:${GOPHISH_ADMIN_PORT} (default credentials: admin / gophish)"
 echo -e "Gophish Phishing: http://localhost:${GOPHISH_PHISH_PORT}"
-echo -e "Evilginx2: Access through docker exec -it evilginx2 bash and then run 'evilginx'"
 echo -e "Axiom: Access through docker exec -it axiom bash"
 
 print_warning "IMPORTANT: For security reasons, please change all default passwords immediately!"
+print_message "To manage your containers, use: ./utils.sh [command]"
