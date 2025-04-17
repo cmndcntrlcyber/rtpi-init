@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  evilginx2:
+    container_name: evilginx2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    ports:
+      - "${EVILGINX2_HTTP_PORT:-8880}:80"
+      - "${EVILGINX2_HTTPS_PORT:-8443}:443"
+      - "5353:53/udp"
+    volumes:
+      - evilginx2_data:/root/.evilginx
+    environment:
+      - CONFIG_PATH=/root/.evilginx
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    networks:
+      - evilginx_network
+
+networks:
+  evilginx_network:
+    driver: bridge
+
+volumes:
+  evilginx2_data:
