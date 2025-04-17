@@ -34,11 +34,16 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+# Check if Docker Compose is installed (either docker-compose or docker compose)
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+else
     print_error "Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
+print_message "Using Docker Compose command: $DOCKER_COMPOSE"
 
 # Function to check if a port is in use
 check_port() {

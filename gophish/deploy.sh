@@ -28,8 +28,12 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+# Check if Docker Compose is installed (either docker-compose or docker compose)
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+else
     print_error "Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
@@ -88,7 +92,7 @@ fi
 
 # Build and start the service
 print_message "Building and starting Gophish service..."
-docker-compose --env-file .env up -d --build
+$DOCKER_COMPOSE --env-file .env up -d --build
 
 # Print access information
 print_message "Gophish service started!"
@@ -99,5 +103,5 @@ echo -e "Phishing server: http://localhost:${GOPHISH_PHISH_PORT}"
 
 print_warning "For security reasons, please change the default password immediately!"
 print_warning "Use this tool responsibly and legally!"
-print_message "To stop the service: docker-compose down"
-print_message "To restart the service: docker-compose restart"
+print_message "To stop the service: $DOCKER_COMPOSE down"
+print_message "To restart the service: $DOCKER_COMPOSE restart"

@@ -28,8 +28,12 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+# Check if Docker Compose is installed (either docker-compose or docker compose)
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+else
     print_error "Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
@@ -81,7 +85,7 @@ fi
 
 # Build and start Nginx Proxy Manager
 print_message "Building and starting Nginx Proxy Manager..."
-docker-compose --env-file .env up -d
+$DOCKER_COMPOSE --env-file .env up -d
 
 # Print access information
 print_message "Nginx Proxy Manager service started!"
@@ -91,5 +95,5 @@ echo -e "Admin UI: http://localhost:${NPM_ADMIN_PORT}"
 echo -e "Default credentials: admin@example.com / changeme"
 
 print_warning "For security reasons, please change the default password immediately!"
-print_message "To stop the service: docker-compose down"
-print_message "To restart the service: docker-compose restart"
+print_message "To stop the service: $DOCKER_COMPOSE down"
+print_message "To restart the service: $DOCKER_COMPOSE restart"

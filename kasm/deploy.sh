@@ -28,8 +28,12 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+# Check if Docker Compose is installed (either docker-compose or docker compose)
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+else
     print_error "Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
@@ -134,7 +138,7 @@ chmod +x start.sh
 
 # Build and start Kasm services
 print_message "Building and starting Kasm Workspaces services..."
-docker-compose --env-file .env up -d --build
+$DOCKER_COMPOSE --env-file .env up -d --build
 
 # Wait for services to start
 print_message "Waiting for services to start (this may take a minute)..."
@@ -148,5 +152,5 @@ echo -e "Default admin credentials: admin@kasm.local / password"
 
 print_warning "For security reasons, please change all default passwords immediately!"
 print_warning "Use this tool responsibly and legally!"
-print_message "To stop all services: docker-compose down"
-print_message "To restart all services: docker-compose restart"
+print_message "To stop all services: $DOCKER_COMPOSE down"
+print_message "To restart all services: $DOCKER_COMPOSE restart"
