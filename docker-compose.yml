@@ -91,7 +91,7 @@ services:
         ipv4_address: 10.10.0.2
       kasm_network: {}
     ports:
-      - "${KASM_PORT:-443}:443"
+      - "8445:443"
     depends_on:
       - kasm_api
       - kasm_manager
@@ -130,7 +130,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - portainer_data:/data
     ports:
-      - "${PORTAINER_PORT:-9000}:9000"
+      - "9000:9000"
     networks:
       - portainer_network
       - hack_network
@@ -180,8 +180,8 @@ services:
       - NET_ADMIN
       - NET_RAW
     ports:
-      - "${EVILGINX2_HTTP_PORT:-8880}:80"
-      - "${EVILGINX2_HTTPS_PORT:-8443}:443"
+      - "8880:80"
+      - "8444:443"
       - "5353:53/udp"
     volumes:
       - evilginx2_data:/root/.evilginx
@@ -201,8 +201,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "${GOPHISH_ADMIN_PORT:-3333}:3333"
-      - "${GOPHISH_PHISH_PORT:-8080}:8080"
+      - "3334:3333"
+      - "8081:8080"
     volumes:
       - gophish_data:/opt/gophish/data
       - ./integration-config.json:/opt/gophish/integration-config.json:ro
