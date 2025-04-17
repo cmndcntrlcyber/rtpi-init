@@ -21,6 +21,19 @@ function print_error() {
     echo -e "${RED}[-] $1${NC}"
 }
 
+# Check if Docker Compose is available (either V1 or V2)
+DOCKER_COMPOSE=""
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+    print_message "Docker Compose V1 detected."
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+    print_message "Docker Compose V2 detected."
+else
+    print_error "Docker Compose is not installed. Please install Docker Compose first."
+    exit 1
+fi
+
 # Show help message
 function show_help() {
     echo "Utility Script for Docker Environment"
@@ -43,35 +56,35 @@ function show_help() {
 # Show status of all containers
 function show_status() {
     print_message "Showing status of all containers..."
-    docker-compose ps
+    $DOCKER_COMPOSE ps
 }
 
 # Start all containers
 function start_containers() {
     print_message "Starting all containers..."
-    docker-compose up -d
+    $DOCKER_COMPOSE up -d
 }
 
 # Stop all containers
 function stop_containers() {
     print_message "Stopping all containers..."
-    docker-compose down
+    $DOCKER_COMPOSE down
 }
 
 # Restart all containers
 function restart_containers() {
     print_message "Restarting all containers..."
-    docker-compose restart
+    $DOCKER_COMPOSE restart
 }
 
 # Show logs for a specific container
 function show_logs() {
     if [[ -z "$1" ]]; then
         print_message "Showing logs for all containers..."
-        docker-compose logs
+        $DOCKER_COMPOSE logs
     else
         print_message "Showing logs for container $1..."
-        docker-compose logs "$1"
+        $DOCKER_COMPOSE logs "$1"
     fi
 }
 
@@ -89,8 +102,8 @@ function open_shell() {
 # Update all containers
 function update_containers() {
     print_message "Updating all containers..."
-    docker-compose pull
-    docker-compose up -d
+    $DOCKER_COMPOSE pull
+    $DOCKER_COMPOSE up -d
 }
 
 # Create a backup of all volumes
@@ -100,16 +113,16 @@ function backup_volumes() {
     mkdir -p "$backup_dir"
     
     # Stop containers
-    docker-compose down
+    $DOCKER_COMPOSE down
     
     # Backup each volume
-    for volume in kasm_db_data kasm_profiles kasm_data portainer_data evilginx2_data gophish_data axiom_data; do
+    for volume in kasm_db_1.15.0 portainer_data npm_data npm_letsencrypt evilginx2_workspace_data gophish_workspace_data evilginx2_data gophish_data axiom_data; do
         print_message "Backing up volume $volume..."
         docker run --rm -v "$volume:/source" -v "$(pwd)/$backup_dir:/backup" alpine tar -czf "/backup/$volume.tar.gz" -C /source .
     done
     
     # Restart containers
-    docker-compose up -d
+    $DOCKER_COMPOSE up -d
     
     print_message "Backup completed successfully in directory $backup_dir."
 }
@@ -140,10 +153,10 @@ function restore_volumes() {
     print_message "Restoring backup from directory $backup_dir..."
     
     # Stop containers
-    docker-compose down
+    $DOCKER_COMPOSE down
     
     # Restore each volume
-    for volume in kasm_db_data kasm_profiles kasm_data portainer_data evilginx2_data gophish_data axiom_data; do
+    for volume in kasm_db_1.15.0 portainer_data npm_data npm_letsencrypt evilginx2_workspace_data gophish_workspace_data evilginx2_data gophish_data axiom_data; do
         if [[ -f "$backup_dir/$volume.tar.gz" ]]; then
             print_message "Restoring volume $volume..."
             docker run --rm -v "$volume:/destination" -v "$(pwd)/$backup_dir:/backup" alpine sh -c "rm -rf /destination/* && tar -xzf /backup/$volume.tar.gz -C /destination"
@@ -153,7 +166,7 @@ function restore_volumes() {
     done
     
     # Restart containers
-    docker-compose up -d
+    $DOCKER_COMPOSE up -d
     
     print_message "Restore completed successfully."
 }

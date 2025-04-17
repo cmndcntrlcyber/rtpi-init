@@ -28,8 +28,15 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+# Check if Docker Compose is available (either V1 or V2)
+DOCKER_COMPOSE=""
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+    print_message "Docker Compose V1 detected."
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+    print_message "Docker Compose V2 detected."
+else
     print_error "Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
@@ -38,11 +45,12 @@ fi
 print_message "Making setup scripts executable..."
 chmod +x setup-evilginx2.sh setup-gophish.sh
 
-# Create .env file with default values
-print_message "Creating .env file with default values..."
-cat > .env << EOL
+# Create .env file with default values if it doesn't exist
+if [ ! -f .env ]; then
+    print_message "Creating .env file with default values..."
+    cat > .env << EOL
 # Kasm Workspaces Configuration
-KASM_VERSION=latest
+KASM_VERSION=1.15.0
 PUBLIC_IP=127.0.0.1
 KASM_PORT=443
 
@@ -59,7 +67,17 @@ EVILGINX2_HTTPS_PORT=8443
 # Gophish Configuration
 GOPHISH_ADMIN_PORT=3333
 GOPHISH_PHISH_PORT=8080
+
+# Database Configuration
+DB_HOST=kasm_db
+DB_NAME=kasm
+DB_USER=kasmdb
+DB_PASS=kasmdb_password
+DB_PORT=5432
 EOL
+else
+    print_message "Using existing .env file."
+fi
 
 # Ask for configuration
 print_message "Do you want to configure the environment variables? (y/n)"
@@ -124,7 +142,7 @@ fi
 
 # Start all containers
 print_message "Starting all containers..."
-docker-compose up -d
+$DOCKER_COMPOSE up -d
 
 # Wait for all containers to start
 print_message "Waiting for all containers to start..."

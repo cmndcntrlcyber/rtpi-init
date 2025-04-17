@@ -10,15 +10,22 @@ if ! docker info > /dev/null 2>&1; then
     exit 1
 fi
 
-# Check if docker-compose is installed
-if ! command -v docker-compose &> /dev/null; then
-    echo "Error: docker-compose is not installed."
+# Check if Docker Compose is available (either V1 or V2)
+DOCKER_COMPOSE=""
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+    echo "Docker Compose V1 detected."
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+    echo "Docker Compose V2 detected."
+else
+    echo "Error: Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
 
 # Check if containers are running
 echo "Checking container status..."
-docker-compose ps
+$DOCKER_COMPOSE ps
 
 # Check if key services are running
 echo -e "\nChecking key services..."

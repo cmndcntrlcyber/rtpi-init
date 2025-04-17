@@ -10,9 +10,22 @@ if ! docker info > /dev/null 2>&1; then
     exit 1
 fi
 
+# Check if Docker Compose is available (either V1 or V2)
+DOCKER_COMPOSE=""
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+    echo "Docker Compose V1 detected."
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+    echo "Docker Compose V2 detected."
+else
+    echo "Error: Docker Compose is not installed. Please install Docker Compose first."
+    exit 1
+fi
+
 # Stop and remove containers
 echo "Stopping and removing containers..."
-docker-compose down
+$DOCKER_COMPOSE down
 
 # Ask if user wants to remove volumes
 read -p "Do you want to remove all data (volumes)? This will delete all campaign data, configurations, and workspaces. (y/n): " remove_volumes
