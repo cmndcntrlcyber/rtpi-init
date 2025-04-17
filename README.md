@@ -55,6 +55,13 @@ The infrastructure consists of:
    - Start all containers
    - Display access information
 
+3. Test your deployment:
+   ```bash
+   ./test-deployment.sh
+   ```
+   
+   This will verify that all services are running correctly and accessible.
+
 ## Access Information
 
 After installation, you can access the tools at:
@@ -124,9 +131,7 @@ Available commands:
 
 All services use Docker volumes for persistent storage:
 
-- `kasm_db_data`: Database for Kasm Workspaces
-- `kasm_profiles`: Kasm user profiles
-- `kasm_data`: Kasm application data
+- `kasm_db_1.15.0`: Database for Kasm Workspaces
 - `portainer_data`: Portainer configuration and state
 - `npm_data`: Nginx Proxy Manager settings
 - `npm_letsencrypt`: SSL certificates
@@ -135,6 +140,29 @@ All services use Docker volumes for persistent storage:
 - `evilginx2_data`: Evilginx2 standalone service data
 - `gophish_data`: Gophish standalone service data
 - `axiom_data`: Axiom configuration and data
+
+## Integration
+
+This environment features integration between Evilginx2 and Gophish:
+
+- Evilginx2 can be used as a redirector for Gophish campaigns
+- Configuration is managed through the `integration-config.json` file
+- Both tools can be used independently or together
+- The hack_network connects both services for seamless communication
+
+## Cleanup
+
+To clean up the environment:
+
+```bash
+./cleanup.sh
+```
+
+This script will:
+- Stop and remove all containers
+- Optionally remove volumes (data)
+- Optionally remove Docker images
+- Clean up any dangling resources
 
 ## Security Considerations
 
@@ -150,6 +178,7 @@ All services use Docker volumes for persistent storage:
 - **Container failures**: Check logs with `./utils.sh logs [container_name]`
 - **Workspace issues**: You can manually execute setup scripts inside containers
 - **Performance issues**: Increase Docker resources (CPU/RAM) if workspaces are slow
+- **Network issues**: Run `./test-deployment.sh` to verify connectivity between services
 
 ## Contributing
 
