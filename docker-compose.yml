@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Kasm Workspaces services
   kasm_agent:
-    image: kasmweb/agent:1.15.0
+    image: kasmweb/agent:${KASM_VERSION:-1.15.0}
     container_name: kasm_agent
     restart: unless-stopped
     networks:
@@ -18,7 +18,7 @@ services:
       - kasm_db_1.15.0:/data
 
   kasm_api:
-    image: kasmweb/api:1.15.0
+    image: kasmweb/api:${KASM_VERSION:-1.15.0}
     container_name: kasm_api
     restart: unless-stopped
     networks:
@@ -29,6 +29,12 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    environment:
+      - DB_HOST=${DB_HOST:-kasm_db}
+      - DB_NAME=${DB_NAME:-kasm}
+      - DB_USER=${DB_USER:-kasmdb}
+      - DB_PASS=${DB_PASS:-kasmdb_password}
+      - DB_PORT=${DB_PORT:-5432}
 
   kasm_db:
     image: postgres:12-alpine
@@ -45,9 +51,13 @@ services:
       retries: 3
     volumes:
       - kasm_db_1.15.0:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USER:-kasmdb}
+      - POSTGRES_PASSWORD=${DB_PASS:-kasmdb_password}
+      - POSTGRES_DB=${DB_NAME:-kasm}
 
   kasm_guac:
-    image: kasmweb/kasm-guac:1.15.0
+    image: kasmweb/kasm-guac:${KASM_VERSION:-1.15.0}
     container_name: kasm_guac
     restart: unless-stopped
     networks:
@@ -60,7 +70,7 @@ services:
       retries: 3
 
   kasm_manager:
-    image: kasmweb/manager:1.15.0
+    image: kasmweb/manager:${KASM_VERSION:-1.15.0}
     container_name: kasm_manager
     restart: unless-stopped
     networks:
@@ -81,7 +91,7 @@ services:
         ipv4_address: 172.18.0.2
       kasm_network: {}
     ports:
-      - "443:443"
+      - "${KASM_PORT:-443}:443"
     depends_on:
       - kasm_api
       - kasm_manager
@@ -96,7 +106,7 @@ services:
     command: redis-server --appendonly yes
 
   kasm_share:
-    image: kasmweb/share:1.15.0
+    image: kasmweb/share:${KASM_VERSION:-1.15.0}
     container_name: kasm_share
     restart: unless-stopped
     networks:
@@ -123,6 +133,7 @@ services:
       - "${PORTAINER_PORT:-9000}:9000"
     networks:
       - portainer_network
+      - hack_network
 
   # Nginx Proxy Manager
   nginx-proxy-manager:
@@ -138,6 +149,7 @@ services:
       - npm_letsencrypt:/etc/letsencrypt
     networks:
       - kasm_network
+      - hack_network
 
   # Evilginx2 in Kasm Workspace
   evilginx2-workspace:
@@ -190,6 +202,8 @@ services:
       - evilginx2_data:/root/.evilginx
     networks:
       - hack_network
+    environment:
+      - CONFIG_PATH=/root/.evilginx
 
   # Standalone Gophish service
   gophish:
@@ -203,8 +217,11 @@ services:
       - "${GOPHISH_PHISH_PORT:-8080}:8080"
     volumes:
       - gophish_data:/opt/gophish/data
+      - ./integration-config.json:/opt/gophish/integration-config.json:ro
     networks:
       - hack_network
+    depends_on:
+      - evilginx2
 
   # Axiom (as a service)
   axiom:

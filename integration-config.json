@@ -3,7 +3,7 @@
     "enabled": true,
     "url": "http://evilginx2:80",
     "use_for_urls": true,
-    "phishlet_config_dir": "/app/phishlets",
+    "phishlet_config_dir": "/opt/evilginx/phishlets",
     "default_phishlet": "linkedin"
   },
   "gophish": {
@@ -18,6 +18,11 @@
       "use_tls": false,
       "cert_path": "example.crt",
       "key_path": "example.key"
-    }
+    },
+    "database_name": "sqlite3",
+    "database_path": "gophish.db"
+  },
+  "network": {
+    "hack_network": "hack_network"
   }
 }
