@@ -39,7 +39,7 @@ The infrastructure consists of:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/rtpi-init.git
+   git clone https://github.com/cmndcntrlcyber/rtpi-init.git
    cd rtpi-init
    ```
 
