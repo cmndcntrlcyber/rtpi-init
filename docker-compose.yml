@@ -194,6 +194,7 @@ services:
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
+      - NET_RAW
     ports:
       - "${EVILGINX2_HTTP_PORT:-8880}:80"
       - "${EVILGINX2_HTTPS_PORT:-8443}:443"
@@ -204,6 +205,9 @@ services:
       - hack_network
     environment:
       - CONFIG_PATH=/root/.evilginx
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   # Standalone Gophish service
   gophish:

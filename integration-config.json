@@ -4,7 +4,10 @@
     "url": "http://evilginx2:80",
     "use_for_urls": true,
     "phishlet_config_dir": "/opt/evilginx/phishlets",
-    "default_phishlet": "linkedin"
+    "default_phishlet": "linkedin",
+    "dns_port": 53,
+    "http_port": 80,
+    "https_port": 443
   },
   "gophish": {
     "admin_server": {
@@ -24,5 +27,9 @@
   },
   "network": {
     "hack_network": "hack_network"
+  },
+  "logging": {
+    "level": "info",
+    "file": "/opt/gophish/data/integration.log"
   }
 }

@@ -98,6 +98,16 @@ The Evilginx2 workspace provides:
 - Persistent storage for phishlets and configurations
 - Pre-installed dependencies for Evilginx2
 - Desktop shortcut for easy access
+- Detailed README with usage instructions
+
+#### Evilginx2 Configuration
+
+The Evilginx2 service is configured according to the official documentation:
+- Includes necessary network capabilities (NET_ADMIN, NET_RAW)
+- Uses Google DNS servers (8.8.8.8, 8.8.4.4) for reliable DNS resolution
+- Includes bind-tools for DNS utilities
+- Exposes ports for HTTP (80), HTTPS (443), and DNS (53/udp)
+- Persistent storage for configurations and phishlets
 
 ### Gophish Workspace
 
