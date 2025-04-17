@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  gophish:
+    container_name: gophish
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${GOPHISH_ADMIN_PORT:-3333}:3333"
+      - "${GOPHISH_PHISH_PORT:-8080}:8080"
+    volumes:
+      - gophish_data:/opt/gophish/data
+      - ../integration-config.json:/opt/gophish/integration-config.json:ro
+    networks:
+      - gophish_network
+
+networks:
+  gophish_network:
+    driver: bridge
+
+volumes:
+  gophish_data:
