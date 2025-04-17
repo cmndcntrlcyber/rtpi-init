@@ -141,8 +141,8 @@ services:
     container_name: nginx-proxy-manager
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "81:81"      # Admin UI
+      - "8082:80"
+      - "8083:81"      # Admin UI
       - "8443:443"   # HTTPS (changed port to avoid conflict with Kasm)
     volumes:
       - npm_data:/data
