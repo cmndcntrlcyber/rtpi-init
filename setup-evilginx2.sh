@@ -40,7 +40,7 @@ Version=1.0
 Type=Application
 Name=Evilginx2
 Comment=Evilginx2 Phishing Framework
-Exec=gnome-terminal -- bash -c "cd /home/kasm-user/data/evilginx2 && sudo ./evilginx2 -p ./phishlets -t ./templates; exec bash"
+Exec=gnome-terminal -- bash -c "cd /home/kasm-user/data/evilginx2 && sudo ./evilginx2 -p ./phishlets; exec bash"
 Icon=utilities-terminal
 Terminal=false
 StartupNotify=true
@@ -53,7 +53,7 @@ cat > /home/kasm-user/Desktop/Evilginx2-README.txt << EOF
 Evilginx2 Usage Instructions:
 
 1. Start Evilginx2 by double-clicking the desktop shortcut or run:
-   cd /home/kasm-user/data/evilginx2 && sudo ./evilginx2 -p ./phishlets -t ./templates
+   cd /home/kasm-user/data/evilginx2 && sudo ./evilginx2 -p ./phishlets
 
 2. Basic commands:
    - phishlets - List available phishlets
@@ -75,5 +75,5 @@ sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 
 echo "[+] Evilginx2 setup complete!"
-echo "[+] To start Evilginx2, double-click the desktop shortcut or run: cd /home/kasm-user/data/evilginx2 && sudo ./evilginx2 -p ./phishlets -t ./templates"
+echo "[+] To start Evilginx2, double-click the desktop shortcut or run: cd /home/kasm-user/data/evilginx2 && sudo ./evilginx2 -p ./phishlets"
 echo "[+] See the README file on the desktop for usage instructions."

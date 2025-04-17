@@ -20,9 +20,8 @@ RUN apk add --no-cache ca-certificates bash bind-tools
 # Copy the built binary
 COPY --from=builder /go/bin/evilginx /usr/local/bin/evilginx
 
-# Copy the phishlets and other necessary files
+# Copy the phishlets
 COPY --from=builder /go/src/github.com/kgretzky/evilginx2/phishlets /opt/evilginx/phishlets
-COPY --from=builder /go/src/github.com/kgretzky/evilginx2/templates /opt/evilginx/templates
 
 # Create necessary directories
 RUN mkdir -p /root/.evilginx
@@ -33,4 +32,4 @@ WORKDIR /root
 EXPOSE 80 443 53/udp
 
 # Set entrypoint
-ENTRYPOINT ["evilginx", "-p", "/opt/evilginx/phishlets", "-t", "/opt/evilginx/templates"]
+ENTRYPOINT ["evilginx", "-p", "/opt/evilginx/phishlets"]
