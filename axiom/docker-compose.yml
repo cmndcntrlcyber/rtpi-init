@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  axiom:
+    container_name: axiom
+    image: ubuntu:20.04
+    platform: linux/amd64
+    restart: unless-stopped
+    command: >
+      bash -c "apt update && apt install -y git curl sudo golang wget zip unzip lsb-release && 
+      git clone https://github.com/pry0cc/axiom ~/.axiom/ && cd && 
+      chmod +x ~/.axiom/interact/axiom-configure && ~/.axiom/interact/axiom-configure --docker && 
+      tail -f /dev/null"
+    volumes:
+      - axiom_data:/root/.axiom
+    networks:
+      - axiom_network
+
+networks:
+  axiom_network:
+    driver: bridge
+
+volumes:
+  axiom_data:
