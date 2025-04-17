@@ -128,6 +128,7 @@ deploy_service() {
     if [ ! -f "$service/deploy.sh" ]; then
         print_error "Deploy script for $service does not exist."
         return 1
+    fi
     
     # Make sure the deploy script is executable
     chmod +x "$service/deploy.sh"
