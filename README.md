@@ -8,7 +8,6 @@ This project integrates multiple security tools into a coherent, containerized e
 
 - **Kasm Workspaces**: Browser-accessible virtual desktops for security tools
 - **Portainer**: Docker container management UI
-- **Nginx Proxy Manager**: Web traffic routing with SSL support
 - **Evilginx2**: Advanced phishing framework (available as both standalone service and in Kasm workspace)
 - **Gophish**: Phishing campaign management (available as both standalone service and in Kasm workspace)
 - **Axiom**: Dynamic infrastructure framework for red team operations
@@ -25,7 +24,6 @@ The infrastructure consists of:
    - Evilginx2 service with direct port access
    - Gophish service with direct port access
    - Portainer for container management
-   - Nginx Proxy Manager for routing and SSL termination
    - Axiom for dynamic infrastructure
 
 ## Prerequisites
@@ -33,7 +31,7 @@ The infrastructure consists of:
 - Docker
 - Docker Compose
 - 8GB+ RAM recommended
-- Open ports: 80, 81, 443, 3333, 5353, 6901, 6902, 8080, 8443, 8880, 9000
+- Open ports: 443, 3334, 5353, 6901, 6902, 8081, 8444, 8445, 8880, 9000
 
 ## Setup Instructions
 
@@ -66,12 +64,10 @@ The infrastructure consists of:
 
 After installation, you can access the tools at:
 
-- **Kasm Workspaces**: https://localhost:443 (or your configured port)
+- **Kasm Workspaces**: https://localhost:8445 (or your configured port)
   - Default credentials: admin@kasm.local / password
 - **Portainer**: http://localhost:9000 (or your configured port)
   - Create your admin account on first login
-- **Nginx Proxy Manager**: http://localhost:81
-  - Default credentials: admin@example.com / changeme
 - **Evilginx2 Workspace**: https://localhost:6901
   - Password: password123 (or your configured password)
 - **Gophish Workspace**: https://localhost:6902
@@ -143,8 +139,6 @@ All services use Docker volumes for persistent storage:
 
 - `kasm_db_1.15.0`: Database for Kasm Workspaces
 - `portainer_data`: Portainer configuration and state
-- `npm_data`: Nginx Proxy Manager settings
-- `npm_letsencrypt`: SSL certificates
 - `evilginx2_workspace_data`: Data for Evilginx2 Kasm workspace
 - `gophish_workspace_data`: Data for Gophish Kasm workspace
 - `evilginx2_data`: Evilginx2 standalone service data
@@ -177,7 +171,6 @@ This script will:
 ## Security Considerations
 
 - Change all default passwords immediately after setup
-- Use Nginx Proxy Manager to secure internal services with SSL
 - Consider using firewall rules to restrict access to management interfaces
 - Run behind a VPN for sensitive red team operations
 - Ensure you have proper authorization before conducting any phishing campaigns

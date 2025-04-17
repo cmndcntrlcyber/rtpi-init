@@ -116,7 +116,7 @@ function backup_volumes() {
     $DOCKER_COMPOSE down
     
     # Backup each volume
-    for volume in kasm_db_1.15.0 portainer_data npm_data npm_letsencrypt evilginx2_workspace_data gophish_workspace_data evilginx2_data gophish_data axiom_data; do
+    for volume in kasm_db_1.15.0 portainer_data evilginx2_workspace_data gophish_workspace_data evilginx2_data gophish_data axiom_data; do
         print_message "Backing up volume $volume..."
         docker run --rm -v "$volume:/source" -v "$(pwd)/$backup_dir:/backup" alpine tar -czf "/backup/$volume.tar.gz" -C /source .
     done
@@ -156,7 +156,7 @@ function restore_volumes() {
     $DOCKER_COMPOSE down
     
     # Restore each volume
-    for volume in kasm_db_1.15.0 portainer_data npm_data npm_letsencrypt evilginx2_workspace_data gophish_workspace_data evilginx2_data gophish_data axiom_data; do
+    for volume in kasm_db_1.15.0 portainer_data evilginx2_workspace_data gophish_workspace_data evilginx2_data gophish_data axiom_data; do
         if [[ -f "$backup_dir/$volume.tar.gz" ]]; then
             print_message "Restoring volume $volume..."
             docker run --rm -v "$volume:/destination" -v "$(pwd)/$backup_dir:/backup" alpine sh -c "rm -rf /destination/* && tar -xzf /backup/$volume.tar.gz -C /destination"

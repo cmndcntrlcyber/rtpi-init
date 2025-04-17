@@ -135,22 +135,6 @@ services:
       - portainer_network
       - hack_network
 
-  # Nginx Proxy Manager
-  nginx-proxy-manager:
-    image: jc21/nginx-proxy-manager:latest
-    container_name: nginx-proxy-manager
-    restart: unless-stopped
-    ports:
-      - "8082:80"
-      - "8083:81"      # Admin UI
-      - "8443:443"   # HTTPS (changed port to avoid conflict with Kasm)
-    volumes:
-      - npm_data:/data
-      - npm_letsencrypt:/etc/letsencrypt
-    networks:
-      - kasm_network
-      - hack_network
-
   # Evilginx2 in Kasm Workspace
   evilginx2-workspace:
     image: kasmweb/ubuntu-focal-desktop:1.14.0
@@ -259,8 +243,6 @@ networks:
 volumes:
   kasm_db_1.15.0:
   portainer_data:
-  npm_data:
-  npm_letsencrypt:
   evilginx2_workspace_data:
   gophish_workspace_data:
   evilginx2_data:

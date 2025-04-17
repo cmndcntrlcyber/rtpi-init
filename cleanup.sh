@@ -59,7 +59,6 @@ if [[ $remove_images == "y" || $remove_images == "Y" ]]; then
         docker rmi $(docker images -q kasmweb/share) 2>/dev/null || true
         docker rmi $(docker images -q kasmweb/ubuntu-focal-desktop) 2>/dev/null || true
         docker rmi $(docker images -q portainer/portainer-ce) 2>/dev/null || true
-        docker rmi $(docker images -q jc21/nginx-proxy-manager) 2>/dev/null || true
         docker rmi $(docker images -q postgres:12-alpine) 2>/dev/null || true
         docker rmi $(docker images -q redis:5-alpine) 2>/dev/null || true
         docker rmi $(docker images -q ubuntu:20.04) 2>/dev/null || true

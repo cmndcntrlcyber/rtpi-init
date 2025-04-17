@@ -153,7 +153,6 @@ print_message "Setup complete! Access your services at:"
 source .env
 echo -e "Kasm Workspaces: https://localhost:${KASM_PORT} (default credentials: admin@kasm.local / password)"
 echo -e "Portainer: http://localhost:${PORTAINER_PORT} (create your admin account on first login)"
-echo -e "Nginx Proxy Manager: http://localhost:81 (default credentials: admin@example.com / changeme)"
 echo -e "Evilginx2 Workspace: https://localhost:6901 (password: ${WORKSPACE_PASSWORD})"
 echo -e "Gophish Workspace: https://localhost:6902 (password: ${WORKSPACE_PASSWORD})"
 echo -e "Evilginx2 Service: Access ports ${EVILGINX2_HTTP_PORT}(HTTP), ${EVILGINX2_HTTPS_PORT}(HTTPS), and 5353(DNS)"
