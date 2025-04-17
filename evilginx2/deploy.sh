@@ -1,6 +1,22 @@
 #!/bin/bash
 set -e
 
+# Default to interactive mode
+AUTO_MODE=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -a|--auto)
+      AUTO_MODE=true
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
 # Colors for better output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -55,23 +71,27 @@ EVILGINX2_HTTP_PORT=${EVILGINX2_HTTP_PORT:-$DEFAULT_HTTP_PORT}
 EVILGINX2_HTTPS_PORT=${EVILGINX2_HTTPS_PORT:-$DEFAULT_HTTPS_PORT}
 EOL
 
-# Ask if user wants to configure ports
-print_message "Do you want to configure the evilginx2 ports? (y/n)"
-read -r answer
-if [[ "$answer" =~ ^[Yy]$ ]]; then
-    # Ask for HTTP port
-    print_message "Enter the HTTP port for Evilginx2 (default: ${EVILGINX2_HTTP_PORT:-$DEFAULT_HTTP_PORT}):"
-    read -r http_port
-    if [[ -n "$http_port" ]]; then
-        sed -i "s/EVILGINX2_HTTP_PORT=.*/EVILGINX2_HTTP_PORT=$http_port/" .env
+# Configure ports if not in auto mode
+if [[ "$AUTO_MODE" != "true" ]]; then
+    print_message "Do you want to configure the evilginx2 ports? (y/n)"
+    read -r answer
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+        # Ask for HTTP port
+        print_message "Enter the HTTP port for Evilginx2 (default: ${EVILGINX2_HTTP_PORT:-$DEFAULT_HTTP_PORT}):"
+        read -r http_port
+        if [[ -n "$http_port" ]]; then
+            sed -i "s/EVILGINX2_HTTP_PORT=.*/EVILGINX2_HTTP_PORT=$http_port/" .env
+        fi
+        
+        # Ask for HTTPS port
+        print_message "Enter the HTTPS port for Evilginx2 (default: ${EVILGINX2_HTTPS_PORT:-$DEFAULT_HTTPS_PORT}):"
+        read -r https_port
+        if [[ -n "$https_port" ]]; then
+            sed -i "s/EVILGINX2_HTTPS_PORT=.*/EVILGINX2_HTTPS_PORT=$https_port/" .env
+        fi
     fi
-    
-    # Ask for HTTPS port
-    print_message "Enter the HTTPS port for Evilginx2 (default: ${EVILGINX2_HTTPS_PORT:-$DEFAULT_HTTPS_PORT}):"
-    read -r https_port
-    if [[ -n "$https_port" ]]; then
-        sed -i "s/EVILGINX2_HTTPS_PORT=.*/EVILGINX2_HTTPS_PORT=$https_port/" .env
-    fi
+else
+    print_message "Running in auto mode with current port configuration."
 fi
 
 # Build and start the service

@@ -1,6 +1,22 @@
 #!/bin/bash
 set -e
 
+# Default to interactive mode
+AUTO_MODE=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -a|--auto)
+      AUTO_MODE=true
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
 # Colors for better output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'

@@ -1,6 +1,22 @@
 #!/bin/bash
 set -e
 
+# Default to interactive mode
+AUTO_MODE=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -a|--auto)
+      AUTO_MODE=true
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
 # Colors for better output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -57,30 +73,34 @@ NPM_ADMIN_PORT=${NPM_ADMIN_PORT:-$DEFAULT_NPM_ADMIN_PORT}
 NPM_HTTPS_PORT=${NPM_HTTPS_PORT:-$DEFAULT_NPM_HTTPS_PORT}
 EOL
 
-# Ask if user wants to configure ports
-print_message "Do you want to configure the Nginx Proxy Manager ports? (y/n)"
-read -r answer
-if [[ "$answer" =~ ^[Yy]$ ]]; then
-    # Ask for HTTP port
-    print_message "Enter the HTTP port for Nginx Proxy Manager (default: ${NPM_HTTP_PORT:-$DEFAULT_NPM_HTTP_PORT}):"
-    read -r http_port
-    if [[ -n "$http_port" ]]; then
-        sed -i "s/NPM_HTTP_PORT=.*/NPM_HTTP_PORT=$http_port/" .env
+# Configure ports if not in auto mode
+if [[ "$AUTO_MODE" != "true" ]]; then
+    print_message "Do you want to configure the Nginx Proxy Manager ports? (y/n)"
+    read -r answer
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+        # Ask for HTTP port
+        print_message "Enter the HTTP port for Nginx Proxy Manager (default: ${NPM_HTTP_PORT:-$DEFAULT_NPM_HTTP_PORT}):"
+        read -r http_port
+        if [[ -n "$http_port" ]]; then
+            sed -i "s/NPM_HTTP_PORT=.*/NPM_HTTP_PORT=$http_port/" .env
+        fi
+        
+        # Ask for Admin port
+        print_message "Enter the Admin port for Nginx Proxy Manager (default: ${NPM_ADMIN_PORT:-$DEFAULT_NPM_ADMIN_PORT}):"
+        read -r admin_port
+        if [[ -n "$admin_port" ]]; then
+            sed -i "s/NPM_ADMIN_PORT=.*/NPM_ADMIN_PORT=$admin_port/" .env
+        fi
+        
+        # Ask for HTTPS port
+        print_message "Enter the HTTPS port for Nginx Proxy Manager (default: ${NPM_HTTPS_PORT:-$DEFAULT_NPM_HTTPS_PORT}):"
+        read -r https_port
+        if [[ -n "$https_port" ]]; then
+            sed -i "s/NPM_HTTPS_PORT=.*/NPM_HTTPS_PORT=$https_port/" .env
+        fi
     fi
-    
-    # Ask for Admin port
-    print_message "Enter the Admin port for Nginx Proxy Manager (default: ${NPM_ADMIN_PORT:-$DEFAULT_NPM_ADMIN_PORT}):"
-    read -r admin_port
-    if [[ -n "$admin_port" ]]; then
-        sed -i "s/NPM_ADMIN_PORT=.*/NPM_ADMIN_PORT=$admin_port/" .env
-    fi
-    
-    # Ask for HTTPS port
-    print_message "Enter the HTTPS port for Nginx Proxy Manager (default: ${NPM_HTTPS_PORT:-$DEFAULT_NPM_HTTPS_PORT}):"
-    read -r https_port
-    if [[ -n "$https_port" ]]; then
-        sed -i "s/NPM_HTTPS_PORT=.*/NPM_HTTPS_PORT=$https_port/" .env
-    fi
+else
+    print_message "Running in auto mode with current port configuration."
 fi
 
 # Build and start Nginx Proxy Manager

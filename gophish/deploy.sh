@@ -1,6 +1,22 @@
 #!/bin/bash
 set -e
 
+# Default to interactive mode
+AUTO_MODE=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -a|--auto)
+      AUTO_MODE=true
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
 # Colors for better output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -55,23 +71,27 @@ GOPHISH_ADMIN_PORT=${GOPHISH_ADMIN_PORT:-$DEFAULT_ADMIN_PORT}
 GOPHISH_PHISH_PORT=${GOPHISH_PHISH_PORT:-$DEFAULT_PHISH_PORT}
 EOL
 
-# Ask if user wants to configure ports
-print_message "Do you want to configure the Gophish ports? (y/n)"
-read -r answer
-if [[ "$answer" =~ ^[Yy]$ ]]; then
-    # Ask for admin port
-    print_message "Enter the admin port for Gophish (default: ${GOPHISH_ADMIN_PORT:-$DEFAULT_ADMIN_PORT}):"
-    read -r admin_port
-    if [[ -n "$admin_port" ]]; then
-        sed -i "s/GOPHISH_ADMIN_PORT=.*/GOPHISH_ADMIN_PORT=$admin_port/" .env
+# Configure ports if not in auto mode
+if [[ "$AUTO_MODE" != "true" ]]; then
+    print_message "Do you want to configure the Gophish ports? (y/n)"
+    read -r answer
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+        # Ask for admin port
+        print_message "Enter the admin port for Gophish (default: ${GOPHISH_ADMIN_PORT:-$DEFAULT_ADMIN_PORT}):"
+        read -r admin_port
+        if [[ -n "$admin_port" ]]; then
+            sed -i "s/GOPHISH_ADMIN_PORT=.*/GOPHISH_ADMIN_PORT=$admin_port/" .env
+        fi
+        
+        # Ask for phishing port
+        print_message "Enter the phishing port for Gophish (default: ${GOPHISH_PHISH_PORT:-$DEFAULT_PHISH_PORT}):"
+        read -r phish_port
+        if [[ -n "$phish_port" ]]; then
+            sed -i "s/GOPHISH_PHISH_PORT=.*/GOPHISH_PHISH_PORT=$phish_port/" .env
+        fi
     fi
-    
-    # Ask for phishing port
-    print_message "Enter the phishing port for Gophish (default: ${GOPHISH_PHISH_PORT:-$DEFAULT_PHISH_PORT}):"
-    read -r phish_port
-    if [[ -n "$phish_port" ]]; then
-        sed -i "s/GOPHISH_PHISH_PORT=.*/GOPHISH_PHISH_PORT=$phish_port/" .env
-    fi
+else
+    print_message "Running in auto mode with current port configuration."
 fi
 
 # Check if integration-config.json exists

@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     networks:
       kasm_default_network:
-        ipv4_address: 10.10.0.3
+        ipv4_address: 10.11.0.3
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
@@ -22,7 +22,7 @@ services:
     restart: unless-stopped
     networks:
       kasm_default_network:
-        ipv4_address: 10.10.0.5
+        ipv4_address: 10.11.0.5
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
     networks:
       kasm_default_network:
-        ipv4_address: 10.10.0.4
+        ipv4_address: 10.11.0.4
       kasm_network: {}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     networks:
       kasm_default_network:
-        ipv4_address: 10.10.0.9
+        ipv4_address: 10.11.0.9
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
@@ -74,7 +74,7 @@ services:
     restart: unless-stopped
     networks:
       kasm_default_network:
-        ipv4_address: 10.10.0.7
+        ipv4_address: 10.11.0.7
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
@@ -87,7 +87,7 @@ services:
     restart: unless-stopped
     networks:
       kasm_default_network:
-        ipv4_address: 10.10.0.2
+        ipv4_address: 10.11.0.2
       kasm_network: {}
     ports:
       - "${KASM_PORT:-443}:443"
@@ -101,7 +101,7 @@ services:
     restart: unless-stopped
     networks:
       kasm_default_network:
-        ipv4_address: 10.10.0.6
+        ipv4_address: 10.11.0.6
     command: redis-server --appendonly yes
 
   kasm_share:
@@ -110,7 +110,7 @@ services:
     restart: unless-stopped
     networks:
       kasm_default_network:
-        ipv4_address: 10.10.0.8
+        ipv4_address: 10.11.0.8
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
@@ -122,7 +122,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 10.10.0.0/24
+        - subnet: 10.11.0.0/24
   kasm_network:
     driver: bridge
 

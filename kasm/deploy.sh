@@ -1,6 +1,22 @@
 #!/bin/bash
 set -e
 
+# Default to interactive mode
+AUTO_MODE=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -a|--auto)
+      AUTO_MODE=true
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
 # Colors for better output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -72,65 +88,69 @@ DB_PORT=${DB_PORT:-$DEFAULT_DB_PORT}
 WORKSPACE_PASSWORD=${WORKSPACE_PASSWORD:-$DEFAULT_WORKSPACE_PASSWORD}
 EOL
 
-# Ask if user wants to configure variables
-print_message "Do you want to configure the Kasm Workspaces environment variables? (y/n)"
-read -r answer
-if [[ "$answer" =~ ^[Yy]$ ]]; then
-    # Ask for KASM_VERSION
-    print_message "Enter the Kasm version (default: ${KASM_VERSION:-$DEFAULT_KASM_VERSION}):"
-    read -r kasm_version
-    if [[ -n "$kasm_version" ]]; then
-        sed -i "s/KASM_VERSION=.*/KASM_VERSION=$kasm_version/" .env
+# Configure variables if not in auto mode
+if [[ "$AUTO_MODE" != "true" ]]; then
+    print_message "Do you want to configure the Kasm Workspaces environment variables? (y/n)"
+    read -r answer
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+        # Ask for KASM_VERSION
+        print_message "Enter the Kasm version (default: ${KASM_VERSION:-$DEFAULT_KASM_VERSION}):"
+        read -r kasm_version
+        if [[ -n "$kasm_version" ]]; then
+            sed -i "s/KASM_VERSION=.*/KASM_VERSION=$kasm_version/" .env
+        fi
+        
+        # Ask for KASM_PORT
+        print_message "Enter the Kasm port (default: ${KASM_PORT:-$DEFAULT_KASM_PORT}):"
+        read -r kasm_port
+        if [[ -n "$kasm_port" ]]; then
+            sed -i "s/KASM_PORT=.*/KASM_PORT=$kasm_port/" .env
+        fi
+        
+        # Ask for DB_HOST
+        print_message "Enter the database host (default: ${DB_HOST:-$DEFAULT_DB_HOST}):"
+        read -r db_host
+        if [[ -n "$db_host" ]]; then
+            sed -i "s/DB_HOST=.*/DB_HOST=$db_host/" .env
+        fi
+        
+        # Ask for DB_NAME
+        print_message "Enter the database name (default: ${DB_NAME:-$DEFAULT_DB_NAME}):"
+        read -r db_name
+        if [[ -n "$db_name" ]]; then
+            sed -i "s/DB_NAME=.*/DB_NAME=$db_name/" .env
+        fi
+        
+        # Ask for DB_USER
+        print_message "Enter the database user (default: ${DB_USER:-$DEFAULT_DB_USER}):"
+        read -r db_user
+        if [[ -n "$db_user" ]]; then
+            sed -i "s/DB_USER=.*/DB_USER=$db_user/" .env
+        fi
+        
+        # Ask for DB_PASS
+        print_message "Enter the database password (default: ${DB_PASS:-$DEFAULT_DB_PASS}):"
+        read -r db_pass
+        if [[ -n "$db_pass" ]]; then
+            sed -i "s/DB_PASS=.*/DB_PASS=$db_pass/" .env
+        fi
+        
+        # Ask for DB_PORT
+        print_message "Enter the database port (default: ${DB_PORT:-$DEFAULT_DB_PORT}):"
+        read -r db_port
+        if [[ -n "$db_port" ]]; then
+            sed -i "s/DB_PORT=.*/DB_PORT=$db_port/" .env
+        fi
+        
+        # Ask for WORKSPACE_PASSWORD
+        print_message "Enter the workspace password (default: ${WORKSPACE_PASSWORD:-$DEFAULT_WORKSPACE_PASSWORD}):"
+        read -r workspace_password
+        if [[ -n "$workspace_password" ]]; then
+            sed -i "s/WORKSPACE_PASSWORD=.*/WORKSPACE_PASSWORD=$workspace_password/" .env
+        fi
     fi
-    
-    # Ask for KASM_PORT
-    print_message "Enter the Kasm port (default: ${KASM_PORT:-$DEFAULT_KASM_PORT}):"
-    read -r kasm_port
-    if [[ -n "$kasm_port" ]]; then
-        sed -i "s/KASM_PORT=.*/KASM_PORT=$kasm_port/" .env
-    fi
-    
-    # Ask for DB_HOST
-    print_message "Enter the database host (default: ${DB_HOST:-$DEFAULT_DB_HOST}):"
-    read -r db_host
-    if [[ -n "$db_host" ]]; then
-        sed -i "s/DB_HOST=.*/DB_HOST=$db_host/" .env
-    fi
-    
-    # Ask for DB_NAME
-    print_message "Enter the database name (default: ${DB_NAME:-$DEFAULT_DB_NAME}):"
-    read -r db_name
-    if [[ -n "$db_name" ]]; then
-        sed -i "s/DB_NAME=.*/DB_NAME=$db_name/" .env
-    fi
-    
-    # Ask for DB_USER
-    print_message "Enter the database user (default: ${DB_USER:-$DEFAULT_DB_USER}):"
-    read -r db_user
-    if [[ -n "$db_user" ]]; then
-        sed -i "s/DB_USER=.*/DB_USER=$db_user/" .env
-    fi
-    
-    # Ask for DB_PASS
-    print_message "Enter the database password (default: ${DB_PASS:-$DEFAULT_DB_PASS}):"
-    read -r db_pass
-    if [[ -n "$db_pass" ]]; then
-        sed -i "s/DB_PASS=.*/DB_PASS=$db_pass/" .env
-    fi
-    
-    # Ask for DB_PORT
-    print_message "Enter the database port (default: ${DB_PORT:-$DEFAULT_DB_PORT}):"
-    read -r db_port
-    if [[ -n "$db_port" ]]; then
-        sed -i "s/DB_PORT=.*/DB_PORT=$db_port/" .env
-    fi
-    
-    # Ask for WORKSPACE_PASSWORD
-    print_message "Enter the workspace password (default: ${WORKSPACE_PASSWORD:-$DEFAULT_WORKSPACE_PASSWORD}):"
-    read -r workspace_password
-    if [[ -n "$workspace_password" ]]; then
-        sed -i "s/WORKSPACE_PASSWORD=.*/WORKSPACE_PASSWORD=$workspace_password/" .env
-    fi
+else
+    print_message "Running in auto mode with current configuration."
 fi
 
 # Ensure start.sh is executable

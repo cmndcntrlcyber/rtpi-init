@@ -1,6 +1,22 @@
 #!/bin/bash
 set -e
 
+# Default to interactive mode
+AUTO_MODE=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -a|--auto)
+      AUTO_MODE=true
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
 # Colors for better output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -53,16 +69,20 @@ cat > .env << EOL
 PORTAINER_PORT=${PORTAINER_PORT:-$DEFAULT_PORTAINER_PORT}
 EOL
 
-# Ask if user wants to configure ports
-print_message "Do you want to configure the Portainer port? (y/n)"
-read -r answer
-if [[ "$answer" =~ ^[Yy]$ ]]; then
-    # Ask for Portainer port
-    print_message "Enter the port for Portainer (default: ${PORTAINER_PORT:-$DEFAULT_PORTAINER_PORT}):"
-    read -r portainer_port
-    if [[ -n "$portainer_port" ]]; then
-        sed -i "s/PORTAINER_PORT=.*/PORTAINER_PORT=$portainer_port/" .env
+# Configure ports if not in auto mode
+if [[ "$AUTO_MODE" != "true" ]]; then
+    print_message "Do you want to configure the Portainer port? (y/n)"
+    read -r answer
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+        # Ask for Portainer port
+        print_message "Enter the port for Portainer (default: ${PORTAINER_PORT:-$DEFAULT_PORTAINER_PORT}):"
+        read -r portainer_port
+        if [[ -n "$portainer_port" ]]; then
+            sed -i "s/PORTAINER_PORT=.*/PORTAINER_PORT=$portainer_port/" .env
+        fi
     fi
+else
+    print_message "Running in auto mode with current port configuration."
 fi
 
 # Build and start Portainer
